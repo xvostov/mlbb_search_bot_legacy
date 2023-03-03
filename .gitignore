@@ -164,4 +164,4 @@ cython_debug/
 .env.dev
 docker-compose.yml
 .idea/
-
+venv
