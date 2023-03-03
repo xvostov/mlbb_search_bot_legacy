@@ -8,6 +8,7 @@ from prometheus_client import start_http_server, Counter
 from settings import DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
 start_http_server(PROM_EXP_PORT)
 
+print(f'mysql://root:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 DB_ENGINE = db.create_engine(f'mysql://root:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
 
