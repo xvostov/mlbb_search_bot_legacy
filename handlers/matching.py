@@ -23,7 +23,7 @@ async def like_dislike_callback_handler(call: CallbackQuery):
         else:
             await call.message.delete_reply_markup()
             await bot.send_message(recipient, 'Ура! Твоя анкета кому-то понравилась, вот анкета этого человека ')
-            logger.debug(f'Успешно отправил контакты пользователю с id: {recipient}')
+            logger.debug(f'Успешно отправил контакты {user_id} пользователю с id: {recipient}')
 
             profile = await db.functions.get_profile_by_user_id(user_id)
 

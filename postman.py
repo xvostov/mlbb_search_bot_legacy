@@ -5,7 +5,8 @@ from loader import bot
 from keyboards.inline import get_like_dislike_kb
 from utils import render_msg
 from loguru import logger
-
+from aiogram.utils import exceptions
+from loader import bot_blockers
 async def send_notification(recipient, profile):
     kb = await get_like_dislike_kb(recipient.user_id, profile.user_id)
     await bot.send_message(recipient.user_id, render_msg(profile),
@@ -16,7 +17,13 @@ async def distribution_iteration():
         profiles = await db.functions.get_all_profiles()
 
         for profile in profiles:
+            if profile.user_id in bot_blockers:
+                continue
+
             for recipient in profiles:
+                if recipient.user_id in bot_blockers:
+                    continue
+
                 observered_user_ids = [view.observed_user_id for view in recipient.views]
 
                 if recipient.user_id == profile.user_id:
@@ -45,6 +52,10 @@ async def distribution_iteration():
                     try:
                         logger.debug(f'[{recipient.user_id}] отправляю анкету {profile.user_id}')
                         await send_notification(recipient, profile)
+
+                    except exceptions.BotBlocked:
+                        logger.debug(f'[{recipient.user_id}] заблокировал бота')
+                        bot_blockers.append(recipient.user_id)
 
                     except Exception as err:
                         logger.error(f'[{recipient.user_id}] {err}')
