@@ -10,7 +10,7 @@ import db.functions
 async def say_all_cmd_handler(message: types.Message):
     if str(message.from_user.id) == '767684418':
         await message.answer('Напишите текст оповещения')
-        await AdminNotification.notification.state()
+        await AdminNotification.notification.set()
     else:
         await message.answer('У вас нет доступа к этой команде')
 
@@ -22,13 +22,14 @@ async def notification_handler(message: types.Message, state: FSMContext):
     for profile in profiles:
         try:
             logger.debug(f'Пытаюсь отправить оповещение {profile.user_id}')
-            await bot.send_message(profile.user_id, message.text)
+            msg = await bot.send_message(profile.user_id, message.text)
         except Exception:
             await message.answer(f'Не удалось оповестить {profile.user_id}')
             logger.warning(f'Не удалось оповестить {profile.user_id}')
             err_counter += 1
         else:
             logger.debug(f'Успешно оповестил {profile.user_id}')
+            await bot.pin_chat_message(profile.user_id, msg.message_id)
 
     if err_counter == 0:
         await message.answer('Всех успешно оповестили')
