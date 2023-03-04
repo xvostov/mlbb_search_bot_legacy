@@ -12,6 +12,8 @@ async def say_all_cmd_handler(message: types.Message):
         await FeedBack.user_fb.set()
     else:
         await message.answer('У вас нет доступа к этой команде')
+
+
 async def notification_handler(message: types.Message, state: FSMContext):
     profiles = await db.functions.get_all_profiles()
 
