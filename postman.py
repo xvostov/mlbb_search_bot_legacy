@@ -1,3 +1,5 @@
+import asyncio
+
 import db.functions
 from loader import bot
 from keyboards.inline import get_like_dislike_kb
@@ -49,3 +51,5 @@ async def distribution_iteration():
                     else:
                         logger.info(f'[{recipient.user_id}] успешно отправил анкету {profile.user_id}')
                         await db.functions.add_to_viewed(recipient.user_id, profile.user_id)
+
+                    await asyncio.sleep(1)
