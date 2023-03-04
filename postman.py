@@ -14,6 +14,7 @@ async def send_notification(recipient, profile):
 
 async def distribution_iteration():
     while True:
+        print(bot_blockers)
         profiles = await db.functions.get_all_profiles()
 
         for profile in profiles:
