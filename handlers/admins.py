@@ -3,13 +3,14 @@ from .states import FeedBack
 from aiogram.dispatcher import FSMContext
 from loader import bot
 from loguru import logger
+from .states import AdminNotification
 
 import db.functions
 
 async def say_all_cmd_handler(message: types.Message):
     if str(message.from_user.id) == '767684418':
         await message.answer('Напишите текст оповещения')
-        await FeedBack.user_fb.set()
+        await AdminNotification.notification.state()
     else:
         await message.answer('У вас нет доступа к этой команде')
 

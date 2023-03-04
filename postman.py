@@ -47,7 +47,7 @@ async def distribution_iteration():
                         await send_notification(recipient, profile)
 
                     except Exception as err:
-                        logger.error(err)
+                        logger.error(f'[{recipient.user_id}] {err}')
                     else:
                         logger.info(f'[{recipient.user_id}] успешно отправил анкету {profile.user_id}')
                         await db.functions.add_to_viewed(recipient.user_id, profile.user_id)
