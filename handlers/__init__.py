@@ -5,6 +5,7 @@ from .profile import *
 from .matching import *
 from .filter import *
 from .feedback import *
+from .admins import *
 
 from .states import *
 from callback_filters import like_dislike_callback_filter
@@ -61,3 +62,7 @@ dp.register_callback_query_handler(callback_handler_without_context, lambda call
 # Feedback
 dp.register_message_handler(feedback_cmd_handler, commands=['feedback'])
 dp.register_message_handler(feedback_handler, state=FeedBack.user_fb)
+
+# Admins
+dp.register_message_handler(say_all_cmd_handler, commands=['say_all'])
+dp.register_message_handler(notification_handler, state=AdminNotification.notification)

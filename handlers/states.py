@@ -31,3 +31,6 @@ class DeleteFilter(StatesGroup):
 
 class FeedBack(StatesGroup):
     user_fb = State()
+
+class AdminNotification(StatesGroup):
+    notification = State()

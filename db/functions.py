@@ -29,7 +29,7 @@ async def add_profile_to_db(profile_data: FSMContextProxy, user_id):
         return 'Не удалось сохранить вашу анкету, попробуйте позже'
 
     else:
-        return 'Ваша анкета успешно сохранена'
+        return 'Ваша анкета успешно сохранена, скоро мы начем вам присылать анкеты других людей.'
 
 
 async def get_profile_by_user_id(user_id):
@@ -106,4 +106,3 @@ async def get_user_filter_by_user_id(user_id):
             return None
         else:
             return user_filter
-
