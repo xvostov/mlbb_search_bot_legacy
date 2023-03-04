@@ -6,7 +6,7 @@ from keyboards.inline import get_like_dislike_kb
 from utils import render_msg
 from loguru import logger
 from aiogram.utils import exceptions
-from loader import bot_blockers
+
 async def send_notification(recipient, profile):
     kb = await get_like_dislike_kb(recipient.user_id, profile.user_id)
     await bot.send_message(recipient.user_id.strip(), render_msg(profile),
