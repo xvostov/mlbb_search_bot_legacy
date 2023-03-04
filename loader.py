@@ -5,11 +5,11 @@ from settings import BOT_TOKEN, PROM_EXP_PORT
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Dispatcher, Bot
 from prometheus_client import start_http_server, Counter
-from settings import DB_PASSWORD, DB_PORT, DB_NAME
+from settings import DB_PASSWORD, DB_PORT, DB_NAME, DB_HOST
 
 start_http_server(PROM_EXP_PORT)
 
-DB_ENGINE = db.create_engine(f'mysql://root:{DB_PASSWORD}@localhost:{DB_PORT}/{DB_NAME}')
+DB_ENGINE = db.create_engine(f'mysql://root:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}')
 
 
 # aiogram
