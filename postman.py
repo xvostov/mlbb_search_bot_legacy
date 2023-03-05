@@ -52,6 +52,7 @@ async def distribution_iteration():
 
                     recipient_filter = recipient.user_filter
                     profile_filter = profile.user_filter
+                    await asyncio.sleep(1)
 
                     # Фильтруем по предпочтениям получателя анкеты
                     if not p_filter(profile, recipient_filter):
@@ -60,12 +61,15 @@ async def distribution_iteration():
                     elif not p_filter(recipient, profile_filter):
                         continue
 
+                    await asyncio.sleep(1)
+
                     try:
                         logger.debug(f'[{recipient.user_id}] отправляю анкету {profile.user_id}')
                         await send_notification(recipient, profile)
 
                     except exceptions.BotBlocked:
                         logger.debug(f'[{recipient.user_id}] заблокировал бота')
+
 
                     except Exception as err:
                         logger.error(f'[{recipient.user_id}] {err}')
