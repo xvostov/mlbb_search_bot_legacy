@@ -14,38 +14,51 @@ async def send_notification(recipient, profile):
                            reply_markup=kb)
 
 
+def p_filter(profile, pfilter):
+    if pfilter:
+        if profile.current_rank < pfilter.min_rank:
+            return False
+        elif profile.current_win_rate < pfilter.min_win_rate:
+            return False
+        elif profile.voice_communication != pfilter.voice_communication:
+            return False
+
+        if pfilter.min_pts:
+            # Пропускаем, если в анкете нет птс
+            if not profile.current_pts:
+                return False
+            else:
+                if profile.current_pts < pfilter.min_pts:
+                    return False
+    return True
+
+
 async def distribution_iteration():
     while True:
         try:
             profiles = await db.functions.get_all_profiles()
-
             for profile in profiles:
                 for recipient in profiles:
-
+                    # Список просмотренных анкет
                     observered_user_ids = [view.observed_user_id for view in recipient.views]
 
+                    # Если анкета и получатель один и тот же человек, пропускаем
                     if recipient.user_id == profile.user_id:
                         continue
 
+                    # Если анкета в списке просмотренных у получателя
                     elif profile.user_id in observered_user_ids:
                         continue
 
-                    if recipient.user_filter:
-                        user_filter = recipient.user_filter
+                    recipient_filter = recipient.user_filter
+                    profile_filter = profile.user_filter
 
-                        if profile.current_rank < user_filter.min_rank:
-                            continue
-                        elif profile.current_win_rate < user_filter.min_win_rate:
-                            continue
-                        elif profile.voice_communication != user_filter.voice_communication:
-                            continue
+                    # Фильтруем по предпочтениям получателя анкеты
+                    if not p_filter(profile, recipient_filter):
+                        continue
 
-                        if user_filter.min_pts:
-                            if not profile.current_pts:
-                                continue
-                            else:
-                                if profile.current_pts < user_filter.min_pts:
-                                    continue
+                    elif not p_filter(recipient, profile_filter):
+                        continue
 
                     try:
                         logger.debug(f'[{recipient.user_id}] отправляю анкету {profile.user_id}')
