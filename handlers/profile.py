@@ -160,7 +160,7 @@ async def new_profile_final_callback_handler(call: CallbackQuery, state: FSMCont
         await call.message.answer(result)
         await state.finish()
 
-        if result == 'Ваша анкета успешно сохранена':
+        if result == 'Ваша анкета успешно сохранена, скоро мы начем вам присылать анкеты других людей.':
             successful_profile_creation.inc()
 
 
