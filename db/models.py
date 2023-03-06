@@ -22,7 +22,7 @@ class Profile(Base):
     second_role = Column(ROLES)
     main_characters = Column(String(250))
     voice_communication = Column(Boolean)
-    user_filter = relationship('UserFilter', back_populates='profile', uselist=False, single_parent=True, lazy='dynamic',
+    user_filter = relationship('UserFilter', back_populates='profile', uselist=False, single_parent=True, lazy='joined',
                                cascade='all, delete')
 
     views = relationship('View', back_populates='profile', lazy='joined', cascade='all, delete', passive_deletes=True)

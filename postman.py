@@ -14,21 +14,26 @@ async def send_notification(recipient, profile):
                            reply_markup=kb)
 
 
-def p_filter(profile, pfilter):
+def p_filter(profile, pfilter, owner_filter):
     if pfilter:
         if profile.current_rank < pfilter.min_rank:
+            logger.debug(f'[{owner_filter.user_id}] У {profile.user_id} ранг меньше {pfilter.min_rank}({profile.current_rank}), фильтрую')
             return False
         elif profile.current_win_rate < pfilter.min_win_rate:
+            logger.debug(f'[{owner_filter.user_id}] У {profile.user_id} вр меньше {pfilter.min_win_rate}({profile.current_win_rate}), фильтрую')
             return False
         elif profile.voice_communication != pfilter.voice_communication:
+            logger.debug(f'[{owner_filter.user_id}] У {profile.user_id} гс {profile.voice_communication} != {pfilter.voice_communication}), фильтрую')
             return False
 
         if pfilter.min_pts:
             # Пропускаем, если в анкете нет птс
             if not profile.current_pts:
+                logger.debug(f'[{owner_filter.user_id}] У {profile.user_id} нет птс, а фильтре есть, фильтрую')
                 return False
             else:
                 if profile.current_pts < pfilter.min_pts:
+                    logger.debug(f'[{owner_filter.user_id}] У {profile.user_id} птс меньше {pfilter.min_pts}({profile.current_pts}), фильтрую')
                     return False
     return True
 
@@ -38,6 +43,7 @@ async def distribution_iteration():
         try:
             profiles = await db.functions.get_all_profiles()
             for profile in profiles:
+                profile_filter = profile.user_filter
                 for recipient in profiles:
                     # Список просмотренных анкет
                     observered_user_ids = [view.observed_user_id for view in recipient.views]
@@ -50,15 +56,15 @@ async def distribution_iteration():
                     elif profile.user_id in observered_user_ids:
                         continue
 
-                    recipient_filter = recipient.user_filter
-                    profile_filter = profile.user_filter
+                    recipient_filter = await db.functions.get_user_filter_by_user_id(recipient.user_id)
+
                     await asyncio.sleep(1)
 
                     # Фильтруем по предпочтениям получателя анкеты
-                    if not p_filter(profile, recipient_filter):
+                    if not p_filter(profile, recipient_filter, recipient):
                         continue
 
-                    elif not p_filter(recipient, profile_filter):
+                    elif not p_filter(recipient, profile_filter, profile):
                         continue
 
                     await asyncio.sleep(1)
