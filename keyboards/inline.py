@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from db.enums import *
 from utils import ranks_levels
+from loguru import logger
 
 __all__ = ['ranks_inline_kb', 'roles_inline_kb', 'yes_no_kb']
 
@@ -24,4 +25,5 @@ async def get_like_dislike_kb(user_id, profile_user_id):
     return like_dislike_kb
 
 async def get_contact_kb(user_url):
+    logger.debug(f'Создаю кнопку: {user_url}')
     return InlineKeyboardMarkup().insert(InlineKeyboardButton('Написать', url=user_url))
