@@ -27,5 +27,6 @@ async def like_dislike_callback_handler(call: CallbackQuery):
 
             profile = await db.functions.get_profile_by_user_id(user_id)
 
+            logger.debug(f'Создаю кнопку написать. id анкеты: {call.from_user.url} Получатель: {recipient}')
             contact_kb = await get_contact_kb(call.from_user.url)
             await bot.send_message(recipient, render_msg(profile), reply_markup=contact_kb)
