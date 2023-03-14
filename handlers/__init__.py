@@ -57,6 +57,7 @@ dp.register_message_handler(check_filter, commands=['check_filter'])
 # Base
 dp.register_message_handler(start_cmd_handler, commands=['start', 'help'])
 dp.register_message_handler(rules_cmd_handler, commands=['rules'])
+dp.register_message_handler(donate_cmd_handler, commands=['donate'])
 dp.register_callback_query_handler(callback_handler_without_context, lambda callback_query: True)
 
 # Feedback
