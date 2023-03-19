@@ -1,108 +1,75 @@
-from aiogram.dispatcher.storage import FSMContextProxy
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm import sessionmaker
-from .models import *
+from sqlalchemy import select, delete
+from .models import User, Profile, View, UserFilter
+from .asyncio_ import session_maker
+from .utils import get_attr_string
+from loguru import logger
 
+async def add_to_db(obj):
+    logger.debug(f'Добавляю в базу объект: {get_attr_string(obj)}')
+    async with session_maker() as session:
+        async with session.begin():
+            session.add(obj)
 
-from loader import DB_ENGINE
-
-
-async def add_profile_to_db(profile_data: FSMContextProxy, user_id):
-    try:
-        with sessionmaker(bind=DB_ENGINE)() as session:
-            session.add(Profile(
-                user_id=user_id,
-                nickname=profile_data.get('nickname'),
-                last_season_rank=profile_data.get('last_season_rank'),
-                current_rank=profile_data.get('current_rank'),
-                current_pts=profile_data.get('current_pts', None),
-                max_rank=profile_data.get('max_rank'),
-                current_win_rate=profile_data.get('current_win_rate'),
-                first_role=profile_data.get('first_role'),
-                second_role=profile_data.get('second_role'),
-                main_characters=profile_data.get('main_characters'),
-                voice_communication=True if profile_data.get('voice_communication') == 'да' else False
-            ))
-            session.commit()
-
-    except Exception as err:
-        return 'Не удалось сохранить вашу анкету, попробуйте позже'
-
+async def select_(query):
+    logger.debug(f'Выполняю select: {query}')
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(query)
+            return result
+async def select_one(query):
+    result = await select_(query)
+    result = result.first()
+    if result is None:
+        return None
     else:
-        return 'Ваша анкета успешно сохранена, скоро мы начем вам присылать анкеты других людей.'
+        return result[0]
 
+async def execute_(query):
+    logger.debug(f'Выполняю execute: {query}')
+    async with session_maker() as session:
+        async with session.begin():
+            await session.execute(query)
+
+
+async def add_user(user: User):
+    await add_to_db(user)
+
+
+async def get_user_by_id(user_id: int) -> User:
+    query = select(User).filter_by(user_id=user_id)
+    return await select_one(query)
+
+
+async def add_profile_to_db(profile: Profile):
+    await add_to_db(profile)
 
 async def get_profile_by_user_id(user_id):
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        try:
-            profile = session.query(Profile).filter(Profile.user_id == int(user_id)).one()
-        except NoResultFound:
-            return None
-        else:
-            return profile
-
+    query = select(Profile).filter_by(user_id=user_id)
+    return await select_one(query)
 
 async def delete_profile_by_user_id(user_id):
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        session.query(Profile).filter(Profile.user_id == int(user_id)).delete()
-        session.commit()
+    query = delete(Profile).filter_by(user_id=user_id)
+    await execute_(query)
 
 
 async def get_all_profiles():
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        return session.query(Profile).all()
-
-async def get_profiles_by_filter(user_filter: UserFilter):
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        if user_filter.min_pts:
-            return session.query(Profile).filter(Profile.current_rank >= user_filter.min_rank,
-                                                 Profile.current_pts >= user_filter.min_pts,
-                                                 Profile.current_win_rate >= user_filter.min_win_rate,
-                                                 Profile.voice_communication == user_filter.voice_communication).all()
-
-        else:
-            return session.query(Profile).filter(Profile.current_rank >= user_filter.min_rank,
-                                                 Profile.current_win_rate >= user_filter.min_win_rate,
-                                                 Profile.voice_communication == user_filter.voice_communication).all()
-
-async def add_to_viewed(observer_user_id, observered_user_id):
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        session.add(View(
-            observer_user_id=observer_user_id,
-            observed_user_id=observered_user_id
-        ))
-        session.commit()
+    query = select(Profile)
+    return await select_(query)
 
 
-async def add_user_filter_to_db(filter_data, user_id):
-    try:
-        with sessionmaker(bind=DB_ENGINE)() as session:
-            session.add(UserFilter(
-                user_id=user_id,
-                min_rank=filter_data.get('min_rank'),
-                min_pts=filter_data.get('min_pts', None),
-                min_win_rate=filter_data.get('min_win_rate'),
-                voice_communication=True if filter_data.get('voice_communication') == 'да' else False
-            ))
-            session.commit()
+async def add_to_viewed(view: View):
+    await add_to_db(view)
 
-    except Exception as err:
-        return 'Не удалось сохранить ваш фильтр, попробуйте позже'
 
-    else:
-        return 'Ваш фильтр сохранен'
+async def add_filter_to_db(user_filter: UserFilter):
+    await add_to_db(user_filter)
+
 
 async def delete_filter_by_user_id(user_id):
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        session.query(UserFilter).filter(UserFilter.user_id == int(user_id)).delete()
-        session.commit()
+    query = delete(UserFilter).filter_by(user_id=user_id)
+    await execute_(query)
 
+async def get_filter_by_user_id(user_id):
+    query = select(UserFilter).filter_by(user_id=user_id)
+    await select_one(query)
 
-async def get_user_filter_by_user_id(user_id):
-    with sessionmaker(bind=DB_ENGINE)() as session:
-        try:
-            user_filter = session.query(UserFilter).filter(UserFilter.user_id == int(user_id)).one()
-        except NoResultFound:
-            return None
-        else:
-            return user_filter
