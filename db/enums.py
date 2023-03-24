@@ -1,9 +1,6 @@
+import sqlalchemy as sa
 
-import sqlalchemy
+# ROLES = sa.Enum('Стрелок', 'Маг', 'Танк', 'Поддержка', 'Убийца', 'Боец')
+ROLES = sa.Enum('Линия золота', 'Средняя линия', 'Роум', 'Лесник', 'Линия опыта')
 
-# ROLES = Enum('Marksman', 'Mage', 'Tank', 'Support', 'Assassin', 'Fighter')
-# RANKS = Enum('Warrior', 'Elite', 'Master', 'Grandmaster', 'Epic', 'Legend', 'Mythic', 'Mythic Glory')
-
-
-# RANKS = sqlalchemy.Enum('Воин', 'Элита', 'Мастер', 'Грандмастер', 'Эпический', 'Легенда', 'Мифический', 'Мифическая слава')
-ROLES = sqlalchemy.Enum('Стрелок', 'Маг', 'Танк', 'Поддержка', 'Убийца', 'Боец')
+REGIONS = sa.Enum('Москва', 'Сибирь', 'Дальний Восток', 'Европа', 'Казахстан', 'Узбекистан', 'Другой')

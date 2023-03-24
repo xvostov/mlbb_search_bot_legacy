@@ -1,7 +1,10 @@
 from aiogram import types
 from aiogram.types import CallbackQuery
 import db.functions
+import db.utils
 from loader import start_cmd_counter
+from loguru import logger
+
 
 with open('rules.txt', 'r', encoding='utf-8') as f_o:
     rules_txt = f_o.read()
@@ -15,8 +18,16 @@ async def start_cmd_handler(message: types.Message):
                          "Полный список доступных команд с описанием можно посмотреть в выпадающем меню,"
                          " слева от поля для ввода сообщения")
 
-    profile = await db.functions.get_profile_by_user_id(message.from_user.id)
-    if not profile:
+    logger.debug(f'Пользователь {message.from_user.id} нажал start')
+
+    user = await db.functions.get_user_by_id(message.from_user.id)
+    if not user:
+        user = db.utils.create_user(message)
+
+        logger.debug(f'Adding user in db: {user}')
+
+        await db.functions.add_user(user)
+
         start_cmd_counter.inc()
 
 

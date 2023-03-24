@@ -7,8 +7,11 @@ from .states import AdminNotification
 
 import db.functions
 
+
 async def say_all_cmd_handler(message: types.Message):
-    if str(message.from_user.id) == '767684418':
+    user = await db.functions.get_user_by_id(message.from_user.id)
+
+    if user.is_admin is True:
         await message.answer('Напишите текст оповещения')
         await AdminNotification.notification.set()
     else:
@@ -16,20 +19,28 @@ async def say_all_cmd_handler(message: types.Message):
 
 
 async def notification_handler(message: types.Message, state: FSMContext):
-    profiles = await db.functions.get_all_profiles()
+    users = await db.functions.get_all_users()
 
     err_counter = 0
-    for profile in profiles:
+    for user in users:
+
         try:
-            logger.debug(f'Пытаюсь отправить оповещение {profile.user_id}')
-            msg = await bot.send_message(profile.user_id, message.text)
+            chat = await bot.get_chat(user.user_id)
+            await chat.unpin_all_messages()
+
         except Exception:
-            await message.answer(f'Не удалось оповестить {profile.user_id}')
-            logger.warning(f'Не удалось оповестить {profile.user_id}')
+            pass
+
+        try:
+            logger.debug(f'Пытаюсь отправить оповещение {user.user_id}')
+            msg = await bot.send_message(user.user_id, message.text)
+        except Exception:
+            await message.answer(f'Не удалось оповестить {user.user_id}')
+            logger.warning(f'Не удалось оповестить {user.user_id}')
             err_counter += 1
         else:
-            logger.debug(f'Успешно оповестил {profile.user_id}')
-            await bot.pin_chat_message(profile.user_id, msg.message_id)
+            logger.debug(f'Успешно оповестил {user.user_id}')
+            await bot.pin_chat_message(user.user_id, msg.message_id)
 
     if err_counter == 0:
         await message.answer('Всех успешно оповестили')

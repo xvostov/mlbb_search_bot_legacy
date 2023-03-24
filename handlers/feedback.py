@@ -13,5 +13,5 @@ async def feedback_handler(message: types.Message, state: FSMContext):
     await state.finish()
 
     contact_kb = await get_contact_kb(message.from_user.url)
-    await bot.send_message(767684418, f'ОБРАТНАЯ СВЯЗЬ ОТ ПОЛЬЗОВАТЕЛЯ\nID Пользователя: {message.from_user.id}\n\n{message.text}',
-                           reply_markup=contact_kb)
+    await bot.send_message(-995554342, f'ОБРАТНАЯ СВЯЗЬ ОТ ПОЛЬЗОВАТЕЛЯ\nID Пользователя: '
+                                       f'{message.from_user.id}\n\n{message.text}', reply_markup=contact_kb)

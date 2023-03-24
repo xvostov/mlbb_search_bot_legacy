@@ -10,6 +10,7 @@ class NewProfile(StatesGroup):
     first_role = State()
     second_role = State()
     main_characters = State()
+    region = State()
     voice_communication = State()
     final = State()
 
@@ -22,7 +23,8 @@ class NewFilter(StatesGroup):
     min_rank = State()
     min_pts = State()
     min_win_rate = State()
-    voice_communication = State()
+    region = State()
+    role = State()
     final = State()
 
 class DeleteFilter(StatesGroup):
