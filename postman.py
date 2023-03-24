@@ -38,10 +38,11 @@ def p_filter(profile: Profile, pfilter: UserFilter, owner_filter: Profile, check
                     return False
 
         if check_role is True:
-            profile_roles = [profile.first_role, profile.second_role]
-            if pfilter.role not in profile_roles:
-                logger.debug(f'Фильтрую, так как искомая роль: {pfilter.role}, а у профиля: {", ".join(profile_roles)}')
-                return False
+            if pfilter.role:
+                profile_roles = [profile.first_role, profile.second_role]
+                if pfilter.role not in profile_roles:
+                    logger.debug(f'Фильтрую, так как искомая роль: {pfilter.role}, а у профиля: {", ".join(profile_roles)}')
+                    return False
 
     return True
 
