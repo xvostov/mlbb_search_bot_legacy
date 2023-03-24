@@ -1,9 +1,5 @@
 import os
 
-# Удалить!
-from dotenv import load_dotenv
-load_dotenv('D:\Projects\mlbb_bot\.env')
-
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 PROM_EXP_PORT = int(os.environ.get('PROM_EXP_PORT'))
 DB_PASSWORD = os.environ.get('MYSQL_ROOT_PASSWORD')
