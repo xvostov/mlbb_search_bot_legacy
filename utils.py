@@ -3,7 +3,7 @@ def render_msg(profile):
 {profile.nickname}
 
 Ранг прошлого сезона: {get_rank_by_lvl(profile.last_season_rank)}
-Текущий ранг: {get_rank_by_lvl(profile.last_season_rank)}
+Текущий ранг: {get_rank_by_lvl(profile.current_rank)}
 Текущий pts: {profile.current_pts if isinstance(profile.current_pts, int) else 'Не указан'}
 Максимальный ранг: {get_rank_by_lvl(profile.max_rank)}
 Текущий вин рейт: {profile.current_win_rate}
