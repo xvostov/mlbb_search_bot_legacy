@@ -158,7 +158,6 @@ async def check_filter(message: types.Message):
 Минимальный ранг: {get_rank_by_lvl(user_filter.min_rank)}
 Минимальный pts: {user_filter.min_pts if user_filter.min_pts else DEFAULT_VALUE}
 Минимальный винрейт: {user_filter.min_win_rate}
-Регион: {user_filter.region}
 Ищем роль: {user_filter.role}
 """.strip()
 
